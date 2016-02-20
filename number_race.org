@@ -1,0 +1,155 @@
+#+TITLE: NumberRace: specifications
+
+* Cognitive background
+
+- quantity representations
+- numerical comparison
+- varying levels of numerical distance
+- adapt to the current level of the child's quantity representation
+- association between representations of number and space
+- reinforce core number sense and the link between number sense and
+  its symbolic representation
+- increase ability for very basic addition and subtraction facts
+- scaffolding procedure to rely increasingly on symbolic representation
+- repeated association feature
+
+From the conclusion : "The design of the software incorporated four
+major principles: Enhancing number sense, cementing links between
+symbolic and non-symbolic representations of number, conceptualiz- ing
+and automatizing arithmetic, and maximizing moti- vation."
+
+* User Interface
+
+Two main screens :
+
+1. The comparison screen for numerical comparison task
+   - possibly add or subtract
+   - possibly with a timer
+   - format can be non-symbolic (gold pieces) or symbolic-written
+     (digit) or symbolic-verbal (spoken words) or a combination
+   - feedback: (1) all three formats together for the choice and (2)
+     whether the player wins or loses
+
+2. The board screen
+   - move by the chosen number (win or lose)
+     - at one time
+     - if 4 pieces, move by x then y [then z] (x+y[+z]=4)
+     - avoid hazards [how many hazards?]
+     - if go on hazard, go backward [how many steps? one]
+     - if arrive at the end, collect a reward
+
+Addition = a sum, up to 9
+Subtraction = a subtraction, result up to 8
+
+* Adaptative learning
+
+** A 3-dimensions learning space
+
+- numerical distance :: see Weber ratio
+
+- speed :: increasingly short deadline, when there is a deadline
+
+- conceptual complexity :: teaches about number symbols and elementary
+     arithmetic.  Difficulty is increased in two [three] ways:
+
+  - decreasing the ratio non-symbolic/symbolic information
+  - introducing addition and subtraction at the higher level
+  - [adding hazards to the board]
+
+The learning space is a cube, with probabilities of success attached
+at each point - for example, the [0.1,0.1,0.1] point in the cube as a
+.3 probability of success = an operational definition of the current
+knowledge of the child.
+
+** Adaptative algorithme
+
+"The task of this algorithm is to estimate what the knowledge space
+looks like for each child, and to present children with problems on
+which the child will perform well most but not all of the time,
+i.e. problems in their "zone of proximal learning".
+
+*** Core adaptative algorithm
+
+ - the algo calculates the performance for the 20 last turns
+
+ - suggest a problem at the difficulty level required to maintain a 75%
+   success performance
+
+*** Levels
+
+ | Level = Board Length | Non-symbolic | Symbolic verbal | Symbolic arabic | Range ceilling | Dot fading | Dot fading duration | Hazards present | Addition required | Subtraction required | Starting Level |
+ | NUM     1-40         | YES/NO       | YES/NO          | YES/NO          |          max 9 | YES/NO     |         NUM (in ms) | YES/NO          | YES/NO            | YES/NO               | Name           |
+ |----------------------+--------------+-----------------+-----------------+----------------+------------+---------------------+-----------------+-------------------+----------------------+----------------|
+ | 1 = 12               | Yes          | Yes             | Yes             |              3 | No         |                   0 | No              | No                | No                   | EASY           |
+ | 2 = 12               | Yes          | Yes             | Yes             |              3 | Yes        |                4000 | No              | No                | No                   |                |
+ | 3 = 12               | Yes          | Yes             | Yes             |              3 | Yes        |                1000 | No              | No                | No                   |                |
+ | 4 = 20               | Yes          | Yes             | Yes             |              5 | No         |                   0 | No              | No                | No                   |                |
+ | 5 = 20               | Yes          | Yes             | Yes             |              5 | Yes        |                4000 | No              | No                | No                   |                |
+ | 6 = 20               | Yes          | Yes             | Yes             |              5 | Yes        |                1000 | No              | No                | No                   |                |
+ | 7 = 20               | No           | No              | Yes             |              5 | No         |                   0 | Yes             | No                | No                   |                |
+ | 8 = 20               | No           | No              | Yes             |              5 | No         |                   0 | No              | Yes               | No                   | INTERMEDIATE   |
+ | 9 = 20               | No           | No              | Yes             |              5 | No         |                   0 | No              | No                | Yes                  |                |
+ | 10 = 30              | No           | No              | Yes             |              5 | No         |                   0 | Yes             | No                | No                   |                |
+ | 11 = 30              | No           | No              | Yes             |              5 | No         |                   0 | No              | Yes               | No                   |                |
+ | 12 = 30              | No           | No              | Yes             |              5 | No         |                   0 | No              | No                | Yes                  |                |
+ | 13 = 40              | No           | No              | Yes             |              5 | No         |                   0 | Yes             | No                | No                   |                |
+ | 14 = 40              | Yes          | Yes             | Yes             |              9 | No         |                   0 | No              | No                | No                   | HARD           |
+ | 15 = 40              | Yes          | Yes             | Yes             |              9 | Yes        |                4000 | No              | No                | No                   |                |
+ | 16 = 40              | Yes          | Yes             | Yes             |              9 | Yes        |                1000 | No              | No                | No                   |                |
+ | 17 = 40              | No           | Yes             | Yes             |              9 | No         |                   0 | No              | No                | No                   |                |
+ | 18 = 40              | No           | No              | Yes             |              9 | No         |                   0 | No              | No                | No                   |                |
+ | 19 = 40              | No           | No              | Yes             |              9 | No         |                   0 | Yes             | No                | No                   |                |
+ | 20 = 40              | No           | No              | Yes             |              9 | No         |                   0 | Yes             | Yes               | No                   |                |
+ | 21 = 40              | No           | No              | Yes             |              9 | No         |                   0 | Yes             | No                | Yes                  |                |
+ | 22 = 40              | No           | No              | Yes             |              9 | No         |                   0 | Yes             | Yes               | Yes                  |                |
+
+#+BEGIN_SRC conf
+# Conceptual complexity dimension levels
+# Format:
+# NUM     1-40,         YES/NO,       YES/NO,          YES/NO,          max 9,          YES/NO,     NUM (in ms),         YES/NO,          YES/NO,            YES/NO,               Name
+# Level = Board Length, Non-symbolic, Symbolic verbal, Symbolic arabic, Range ceilling, Dot fading, Dot fading duration, Hazards present, Addition required, Subtraction required, Starting Level
+1 = 12,Yes,Yes,Yes,3,No,0,No,No,No,EASY
+2 = 12,Yes,Yes,Yes,3,Yes,4000,No,No,No
+3 = 12,Yes,Yes,Yes,3,Yes,1000,No,No,No
+4 = 20,Yes,Yes,Yes,5,No,0,No,No,No
+5 = 20,Yes,Yes,Yes,5,Yes,4000,No,No,No
+6 = 20,Yes,Yes,Yes,5,Yes,1000,No,No,No
+7 = 20,No,No,Yes,5,No,0,Yes,No,No
+8 = 20,No,No,Yes,5,No,0,No,Yes,No,INTERMEDIATE
+9 = 20,No,No,Yes,5,No,0,No,No,Yes
+10 = 30,No,No,Yes,5,No,0,Yes,No,No
+11 = 30,No,No,Yes,5,No,0,No,Yes,No
+12 = 30,No,No,Yes,5,No,0,No,No,Yes
+13 = 40,No,No,Yes,5,No,0,Yes,No,No
+14 = 40,Yes,Yes,Yes,9,No,0,No,No,No,HARD
+15 = 40,Yes,Yes,Yes,9,Yes,4000,No,No,No
+16 = 40,Yes,Yes,Yes,9,Yes,1000,No,No,No
+17 = 40,No,Yes,Yes,9,No,0,No,No,No
+18 = 40,No,No,Yes,9,No,0,No,No,No
+19 = 40,No,No,Yes,9,No,0,Yes,No,No
+20 = 40,No,No,Yes,9,No,0,Yes,Yes,No
+21 = 40,No,No,Yes,9,No,0,Yes,No,Yes
+22 = 40,No,No,Yes,9,No,0,Yes,Yes,Yes
+#+END_SRC
+
+* Problems
+
+- for tested children (from 7 to 9), the first levels were to easy,
+  and the software took too long to adapt to an interesting level.
+
+- some children bored after 10 hours of use.
+  - due to initial slowness (see above)
+  - insufficient variation in the game
+  - slowness of game play
+  - children had won all of the rewards and characters available
+
+* Data
+
+- Comparing numbers from 1 to 9
+
+** Assets
+
+- images
+- sounds
+
+
